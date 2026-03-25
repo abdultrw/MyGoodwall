@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Fun Facts</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .fact-box {
+            background: #f8f9fa;
+            border-left: 5px solid #667eea;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+            font-size: 18px;
+            color: #555;
+            line-height: 1.6;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .face-container {
+            margin: 40px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        svg {
+            width: 200px;
+            height: 200px;
+            cursor: pointer;
+        }
+
+        /* Happy face elements */
+        .happy-mouth {
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .sad-mouth {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Sad face state */
+        .sad .happy-mouth {
+            opacity: 0;
+        }
+
+        .sad .sad-mouth {
+            opacity: 1;
+        }
+
+        .button-container {
+            margin-top: 30px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            font-size: 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 Fun Facts Generator</h1>
+        
+        <div class="fact-box" id="factDisplay">
+            Click the button to get your first fun fact!
+        </div>
+
+        <div class="face-container" id="faceContainer">
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <!-- Face circle -->
+                <circle cx="100" cy="100" r="90" fill="#FFD700" stroke="#333" stroke-width="2"/>
+                
+                <!-- Left eye -->
+                <circle cx="70" cy="80" r="8" fill="#333"/>
+                
+                <!-- Right eye -->
+                <circle cx="130" cy="80" r="8" fill="#333"/>
+                
+                <!-- Happy mouth -->
+                <g class="happy-mouth">
+                    <path d="M 70 110 Q 100 130 130 110" stroke="#333" stroke-width="3" fill="none" stroke-linecap="round"/>
+                </g>
+                
+                <!-- Sad mouth -->
+                <g class="sad-mouth">
+                    <path d="M 70 130 Q 100 110 130 130" stroke="#333" stroke-width="3" fill="none" stroke-linecap="round"/>
+                </g>
+            </svg>
+        </div>
+
+        <div class="button-container">
+            <button id="nextFactBtn">Get Next Fact</button>
+        </div>
+    </div>
+
+    <script>
+        // Array of fun facts
+        const funFacts = [
+            "Honey never spoils! Archaeologists have found 3000-year-old honey in Egyptian tombs that was still perfectly edible.",
+            "Octopuses have three hearts: two pump blood to the gills, while the third pumps it to the rest of the body.",
+            "A group of flamingos is called a 'flamboyance'.",
+            "Cleopatra lived closer to the invention of the iPhone than to the construction of the Great Pyramid.",
+            "Bananas are berries, but strawberries aren't!",
+            "A single bolt of lightning contains enough energy to toast 6 million slices of bread.",
+            "Sharks have been around longer than dinosaurs - they've existed for over 450 million years.",
+            "The smell of petrichor (rain on dry earth) comes from a chemical called geosmin produced by bacteria.",
+            "Wombats produce cube-shaped poop to prevent it from rolling away.",
+            "Honey bees can see ultraviolet light that humans cannot.",
+            "The Eiffel Tower grows about 6 inches taller every summer due to thermal expansion of the iron.",
+            "A group of crows is called a 'murder'.",
+            "Butterflies taste with their feet.",
+            "The inventor of the Pringles can is buried in one.",
+            "Oysters can change their sex depending on the water temperature!",
+            "Scotland's national animal is a unicorn.",
+            "A sneeze can travel up to 26 feet and reach speeds of 100 mph.",
+            "The heart of a blue whale is as large as a car and weighs 400 pounds.",
+            "Ants don't sleep - they're active 24 hours a day.",
+            "It's physically impossible to hum while holding your nose and mouth shut."
+        ];
+
+        let currentFactIndex = 0;
+        const factDisplay = document.getElementById('factDisplay');
+        const nextFactBtn = document.getElementById('nextFactBtn');
+        const faceContainer = document.getElementById('faceContainer');
+
+        // Display initial fact
+        function showNextFact() {
+            factDisplay.textContent = funFacts[currentFactIndex];
+            currentFactIndex = (currentFactIndex + 1) % funFacts.length;
+        }
+
+        // Track mouse movement for face reaction
+        document.addEventListener('mousemove', (e) => {
+            const face = faceContainer.querySelector('svg');
+            const faceRect = face.getBoundingClientRect();
+            
+            // Get face center
+            const faceCenterX = faceRect.left + faceRect.width / 2;
+            const faceCenterY = faceRect.top + faceRect.height / 2;
+            
+            // Calculate distance from mouse to face center
+            const distance = Math.sqrt(
+                Math.pow(e.clientX - faceCenterX, 2) + 
+                Math.pow(e.clientY - faceCenterY, 2)
+            );
+            
+            // If mouse is within 150 pixels, show happy face, otherwise sad
+            if (distance < 150) {
+                faceContainer.classList.remove('sad');
+            } else {
+                faceContainer.classList.add('sad');
+            }
+        });
+
+        // Handle button click
+        nextFactBtn.addEventListener('click', showNextFact);
+
+        // Show initial fact when page loads
+        showNextFact();
+    </script>
+</body>
+</html>
+
